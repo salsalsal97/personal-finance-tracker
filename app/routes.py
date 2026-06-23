@@ -32,13 +32,20 @@ def upload():
 
 @main.route("/summary")
 def summary():
+    month = request.args.get("month")
     transactions = Transaction.query.all()
+    if month:
+        split = month.split("-")
+        year = int(split[0])
+        month_number = int(split[1])
+        transactions = [t for t in transactions if t.date.year == year and t.date.month == month_number]
     total_income = sum(t.amount for t in transactions if t.amount > 0)
     total_spending = sum(t.amount for t in transactions if t.amount < 0)
     net_cashflow = total_income + total_spending
     transaction_count = len(transactions)
     return render_template(
         "summary.html",
+        month=month,
         total_income=total_income,
         total_spending=total_spending,
         net_cashflow=net_cashflow,

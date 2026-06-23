@@ -6,6 +6,11 @@
     <title>Summary</title>
 </head>
 <body>
+    {% if month %}
+        All Transactions
+    {% else %}
+        Summary for {{ month }}
+    {% endif %}
     Total income: {{ "%.2f"|format(total_income) }}
     Total spending: {{ "%.2f"|format(total_spending) }}
     Net cashflow: {{ "%.2f"|format(net_cashflow) }}
