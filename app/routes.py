@@ -29,3 +29,18 @@ def upload():
         uploaded_file = request.files["csv_file"]
         imported_count, skipped_count = import_transactions_from_file(uploaded_file)
         return f"Imported: {imported_count} \n\n Skipped: {skipped_count}"
+
+@main.route("/summary")
+def summary():
+    transactions = Transaction.query.all()
+    total_income = sum(t.amount for t in transactions if t.amount > 0)
+    total_spending = sum(t.amount for t in transactions if t.amount < 0)
+    net_cashflow = total_income + total_spending
+    transaction_count = len(transactions)
+    return render_template(
+        "summary.html",
+        total_income=total_income,
+        total_spending=total_spending,
+        net_cashflow=net_cashflow,
+        transaction_count=transaction_count
+    )

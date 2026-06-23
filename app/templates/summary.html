@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summary</title>
+</head>
+<body>
+    Total income: {{ "%.2f"|format(total_income) }}
+    Total spending: {{ "%.2f"|format(total_spending) }}
+    Net cashflow: {{ "%.2f"|format(net_cashflow) }}
+    Transaction count: {{ transaction_count }}
+</body>
+</html>
