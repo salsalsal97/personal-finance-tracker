@@ -6,14 +6,28 @@
     <title>Summary</title>
 </head>
 <body>
+    <form method="GET" action="{{ url_for('main.summary') }}">
+        <label for="month">Select month:</label>
+        <select name="month" id="month">
+            <option value="">All months</option>
+            {% for available_month in available_months %}
+                <option value="{{ available_month }}"
+                    {% if month == available_month %} selected {% endif %}>
+                    {{ available_month }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit">Apply</button>
+    </form>
+    <br/><br/>
     {% if month %}
-        All Transactions
+        Summary for {{ month }} <br/><br/>
     {% else %}
-        Summary for {{ month }}
+        All Transactions <br/><br/>
     {% endif %}
-    Total income: {{ "%.2f"|format(total_income) }}
-    Total spending: {{ "%.2f"|format(total_spending) }}
-    Net cashflow: {{ "%.2f"|format(net_cashflow) }}
+    Total income: {{ "%.2f"|format(total_income) }} <br/>
+    Total spending: {{ "%.2f"|format(total_spending) }} <br/>
+    Net cashflow: {{ "%.2f"|format(net_cashflow) }} <br/>
     Transaction count: {{ transaction_count }}
 </body>
 </html>
