@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, request
-from app.models import Transaction
+from flask import Blueprint, render_template, request, redirect, url_for
+from app.models import Transaction, Category
 from app.extensions import db
 from app.services.importer import import_transactions_from_file
 import pandas as pd
@@ -57,3 +57,22 @@ def summary():
         net_cashflow=net_cashflow,
         transaction_count=transaction_count
     )
+
+@main.route("/categorise", methods=["GET","POST"])
+def categorise():
+    if request.method == "POST":
+        transaction_id = request.form.get("transaction_id")
+        category_id = request.form.get("category_id")
+        transaction = Transaction.query.get(transaction_id)
+        if transaction:
+            transaction.category_id = category_id
+        db.session.commit()
+        return redirect(url_for("main.categorise"))
+    else:
+        transactions = Transaction.query.filter_by(category_id=None).order_by(Transaction.date.desc()).all()
+        categories = Category.query.order_by(Category.name).all()
+        return render_template(
+            "categorise.html",
+            transactions=transactions,
+            categories=categories
+        )

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories</title>
+</head>
+<body>
+    <h1>Uncategorised Transactions</h1>
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Category</th>
+            <th>Save</th>
+        </tr>
+        {% for transaction in transactions %}
+            <tr>
+                <form method="POST">
+                    <input type="hidden" name="transaction_id" value="{{ transaction.id }}">
+                    <td>{{ transaction.date }}</td>
+                    <td>{{ transaction.description_raw }}</td>
+                    <td>{{ "%.2f"|format(transaction.amount) }}</td>
+                    <td>
+                        <select name="category_id">
+                            <option value="" selected disabled>-- Select Category --</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td><button type="submit">Save</button></td>
+                </form>
+            </tr>
+        {% endfor %}
+    </table></body>
+</html>
