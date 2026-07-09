@@ -7,13 +7,13 @@ CATEGORY_RULES = {
     "Salary": [],
     "Interest": [],
     "Rent & Bills": ["WATER"],
-    "Groceries": ["SAINSBURYS","TESCO","ALDI","MARKS AND SPENCER"],
-    "Car": [],
+    "Groceries": ["SAINSBURYS","TESCO STORE","TESCO STORES","ALDI","MARKS AND SPENCER"],
+    "Car": ["TESCO PETROL"],
     "Medical": ["BELGRAVIA"],
     "Subscriptions": ["APPLE"],
     "Investments": [],
     "Mum Gift": [],
-    "Wise": [],
+    "Wise": ["WISE LONDON"],
     "Shopping": [],
     "Food": ["KFC","SUBWAY","CHICKEN LAND","PEPE","NANDOS","MCDONALDS","JOLLIBEE","UBER   *EATS","UBER *EATS","VENDMASTER","CAFE","RESTAURANT"],
     "Holiday": [],
@@ -39,8 +39,31 @@ def categorise_transaction(description):
                 return category_id
     return None
 
-def import_transactions_from_file(file):
-    df = pd.read_csv(file)
+def normalise_statement(file, statement_type):
+    if statement_type == "amex":
+        df = pd.read_csv(file)
+        df.columns = ["Date", "Transaction Description", "Amount"]
+        account_name = "AMEX"
+    elif statement_type == "hsbc_credit":
+        df = pd.read_csv(file, header=None)
+        df.columns = ["Date", "Transaction Description", "Amount"]
+        account_name = "HSBC Credit"
+    elif statement_type == "hsbc_current":
+        df = pd.read_csv(file, header=None)
+        df.columns = ["Date", "Transaction Description", "Amount"]
+        account_name = "HSBC Current"
+    elif statement_type == "legacy":
+        pass
+    df["Amount"] = (
+        df["Amount"]
+        .astype(str)
+        .str.replace(",", "", regex=False)
+        .astype(float)
+    )
+    return account_name, df
+
+def import_transactions_from_file(file, statement_type):
+    account_name, df = normalise_statement(file, statement_type)
     df["Date"] = pd.to_datetime(df["Date"], dayfirst=True)
     df["description_clean"] = (df["Transaction Description"].str.upper().str.strip())
     df["duplicate_index"] = df.groupby(["Date", "Transaction Description", "Amount"]).cumcount()
@@ -56,6 +79,7 @@ def import_transactions_from_file(file):
         else:
             transaction = Transaction(
                 fingerprint = fingerprint,
+                account_name = account_name,
                 category_id = category,
                 date = row["Date"].date(),
                 description_raw = row["Transaction Description"],

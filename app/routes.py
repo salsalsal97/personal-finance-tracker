@@ -27,7 +27,8 @@ def upload():
         return render_template("upload.html")
     else:
         uploaded_file = request.files["csv_file"]
-        imported_count, skipped_count = import_transactions_from_file(uploaded_file)
+        statement_type = request.form.get("statement_types")
+        imported_count, skipped_count = import_transactions_from_file(uploaded_file, statement_type)
         return f"Imported: {imported_count} \n\n Skipped: {skipped_count}"
 
 @main.route("/summary")
