@@ -29,5 +29,22 @@
     Total spending: {{ "%.2f"|format(total_spending) }} <br/>
     Net cashflow: {{ "%.2f"|format(net_cashflow) }} <br/>
     Transaction count: {{ transaction_count }}
+    <h2>Spending by Category</h2>
+    <table>
+        <tr>
+            <th>Category</th>
+            <th>Amount</th>
+        </tr>
+        {% for category_name, amount in category_totals %}
+            <tr>
+                <td>{{ category_name }}</td>
+                <td>£{{ "%.2f"|format(amount) }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="2">No spending found.</td>
+            </tr>
+        {% endfor %}
+    </table>
 </body>
 </html>

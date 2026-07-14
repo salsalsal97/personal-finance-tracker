@@ -49,6 +49,19 @@ def summary():
     total_spending = sum(t.amount for t in transactions if t.amount < 0)
     net_cashflow = total_income + total_spending
     transaction_count = len(transactions)
+    category_totals = {}
+    for transaction in transactions:
+        if transaction.amount < 0:
+            if transaction.category:
+                category_name = transaction.category.name
+            else:
+                category_name = "Uncategorised"
+        category_totals[category_name] = category_totals.get(category_name, 0) + abs(transaction.amount)
+    category_totals = sorted(
+        category_totals.items(),
+        key=lambda item: item[1],
+        reverse=True
+    )
     return render_template(
         "summary.html",
         available_months=available_months,
@@ -56,7 +69,8 @@ def summary():
         total_income=total_income,
         total_spending=total_spending,
         net_cashflow=net_cashflow,
-        transaction_count=transaction_count
+        transaction_count=transaction_count,
+        category_totals=category_totals
     )
 
 @main.route("/categorise", methods=["GET","POST"])
