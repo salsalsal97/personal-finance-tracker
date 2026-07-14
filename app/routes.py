@@ -62,6 +62,11 @@ def summary():
         key=lambda item: item[1],
         reverse=True
     )
+    category_names = []
+    category_amounts = []
+    for name_amount in category_totals:
+        category_names.append(name_amount[0])
+        category_amounts.append(name_amount[1])
     return render_template(
         "summary.html",
         available_months=available_months,
@@ -70,7 +75,9 @@ def summary():
         total_spending=total_spending,
         net_cashflow=net_cashflow,
         transaction_count=transaction_count,
-        category_totals=category_totals
+        category_totals=category_totals,
+        category_names=category_names,
+        category_amounts=category_amounts
     )
 
 @main.route("/categorise", methods=["GET","POST"])

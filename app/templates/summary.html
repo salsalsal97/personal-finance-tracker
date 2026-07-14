@@ -46,5 +46,51 @@
             </tr>
         {% endfor %}
     </table>
+    <div style="width: 600px; height: 400px;">
+        <canvas id="categoryChart"></canvas>
+    </div>
+    <script id="category-names-data" type="application/json">
+        {{ category_names | tojson }}
+    </script>
+    <script id="category-amounts-data" type="application/json">
+        {{ category_amounts | tojson }}
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const canvas = document.getElementById("categoryChart")
+        const categoryNames = JSON.parse(
+            document.getElementById("category-names-data").textContent
+        )
+        const categoryAmounts = JSON.parse(
+            document.getElementById("category-amounts-data").textContent
+        )
+        new Chart(canvas, {
+            type: "bar",
+            data: {
+                labels: categoryNames,
+                datasets: [{
+                    label: "Amount",
+                    data: categoryAmounts
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: "Spending by Category"
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>
