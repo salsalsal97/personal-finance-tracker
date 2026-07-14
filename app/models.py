@@ -14,4 +14,6 @@ class Transaction(db.Model): # Transaction inherits functionality from db.Model,
     description_raw = db.Column(db.String(255), nullable=False)
     description_clean = db.Column(db.String(255), nullable=False)
     amount = db.Column(db.Float, nullable=False)
+    exclude_from_summary = db.Column(db.Boolean, nullable=False, default=False)
+    exclusion_reason = db.Column(db.String(255), nullable=True)
     duplicate_index = db.Column(db.Integer, nullable=False, default=0)

@@ -45,12 +45,13 @@ def summary():
         year = int(split[0])
         month_number = int(split[1])
         transactions = [t for t in transactions if t.date.year == year and t.date.month == month_number]
-    total_income = sum(t.amount for t in transactions if t.amount > 0)
-    total_spending = sum(t.amount for t in transactions if t.amount < 0)
+    valid_transactions = [t for t in transactions if t.exclude_from_summary is False]
+    total_income = sum(t.amount for t in valid_transactions if t.amount > 0)
+    total_spending = sum(t.amount for t in valid_transactions if t.amount < 0)
     net_cashflow = total_income + total_spending
-    transaction_count = len(transactions)
+    transaction_count = len(valid_transactions)
     category_totals = {}
-    for transaction in transactions:
+    for transaction in valid_transactions:
         if transaction.amount < 0:
             if transaction.category:
                 category_name = transaction.category.name

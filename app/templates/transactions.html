@@ -12,12 +12,16 @@
             <th>Date</th>
             <th>Description</th>
             <th>Amount</th>
+            <th>Excluded?</th>
+            <th>Exclusion Reason</th>
         </tr>
         {% for transaction in transactions %}
             <tr>
                 <td>{{ transaction.date }}</td>
                 <td>{{ transaction.description_raw }}</td>
                 <td>{{ "%.2f"|format(transaction.amount) }}</td>
+                <td>{{ transaction.exclude_from_summary }}</td>
+                <td>{{ transaction.exclusion_reason }}</td>
             </tr>
         {% endfor %}
     </table>
