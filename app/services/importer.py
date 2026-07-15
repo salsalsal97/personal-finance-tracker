@@ -59,8 +59,12 @@ def normalise_statement(file, statement_type):
         df = pd.read_csv(file, header=None)
         df.columns = ["Date", "Transaction Description", "Amount"]
         account_name = "HSBC Savings"
-    # elif statement_type == "legacy":
-    #     pass
+    elif statement_type == "legacy":
+        df = pd.read_csv(file)
+        df["Transaction Description"] = "Legacy - " + df["Category"] + " - " + df["Notes"].fillna("")
+        df.columns = ["Date", "Cycle", "Amount", "Legacy Category", "Notes", "Transaction Description"]
+        df = df[["Date", "Transaction Description", "Amount", "Legacy Category"]]
+        account_name = "Legacy"
     df["Amount"] = (
         df["Amount"]
         .astype(str)
@@ -104,7 +108,10 @@ def import_transactions_from_file(file, statement_type):
     for _, row in df.iterrows():
         exclude_from_summary, exclusion_reason = classify_exclusion(account_name,row["Amount"],row["description_clean"])
         fingerprint = make_fingerprint(account_name, row["Date"],row["Transaction Description"],row["Amount"],row["duplicate_index"]) # unique identifier
-        category = categorise_transaction(row["description_clean"])
+        if statement_type == "legacy":
+            category = Category.query.filter_by(name=row["Legacy Category"]).first_or_404().id
+        else:
+            category = categorise_transaction(row["description_clean"])
         existing = Transaction.query.filter_by(fingerprint=fingerprint).first() # checks if unique identifier exists in table
         if existing:
             skipped_count+=1

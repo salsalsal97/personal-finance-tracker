@@ -9,14 +9,14 @@
     <h1>Upload Transactions CSV</h1>
 
     <form method="POST" enctype="multipart/form-data">
-        <input type="file" name="csv_file">
+        <input type="file" name="csv_file" accept=".csv,.xlsx,.xls">
         <label for="statement_types">Select Statement Type:</label>
         <select name="statement_types" id="statement_types">
             <option value="hsbc_current">HSBC Current</option>
             <option value="hsbc_credit">HSBC Credit</option>
             <option value="amex">AMEX</option>
             <option value="hsbc_savings">HSBC Savings</option>
-            <!-- <option value="legacy">Legacy Excel</option> -->
+            <option value="legacy">Legacy Excel</option>
         </select>
         <button type="submit">Upload</button>
     </form>
