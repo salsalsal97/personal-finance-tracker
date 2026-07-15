@@ -4,8 +4,8 @@ from app.models import Transaction, Category
 from app.extensions import db
 
 CATEGORY_RULES = {
-    "Salary": [],
-    "Interest": [],
+    "Salary": ["UK BIOCENTRE CR"],
+    "Interest": ["GROSS INTEREST"],
     "Rent & Bills": ["WATER"],
     "Groceries": ["SAINSBURYS","TESCO STORE","TESCO STORES","ALDI","MARKS AND SPENCER"],
     "Car": ["TESCO PETROL"],
@@ -22,8 +22,11 @@ CATEGORY_RULES = {
     "Outing / Date": ["VUE"],
 }
 
-def make_fingerprint(date, description, amount, duplicate_index):
-    fingerprint = f"{date}|{description}|{round(float(amount), 2)}|{duplicate_index}"
+def make_fingerprint(account_name, date, description, amount, duplicate_index):
+    fingerprint = (
+        f"{account_name}|{date}|{description}|"
+        f"{round(float(amount), 2)}|{duplicate_index}"
+    )
     fingerprint_hex = hashlib.sha256(fingerprint.encode("utf-8")).hexdigest()
     return fingerprint_hex
 
@@ -52,8 +55,12 @@ def normalise_statement(file, statement_type):
         df = pd.read_csv(file, header=None)
         df.columns = ["Date", "Transaction Description", "Amount"]
         account_name = "HSBC Current"
-    elif statement_type == "legacy":
-        pass
+    elif statement_type == "hsbc_savings":
+        df = pd.read_csv(file, header=None)
+        df.columns = ["Date", "Transaction Description", "Amount"]
+        account_name = "HSBC Savings"
+    # elif statement_type == "legacy":
+    #     pass
     df["Amount"] = (
         df["Amount"]
         .astype(str)
@@ -81,6 +88,10 @@ def classify_exclusion(account_name, amount, description):
         elif current_exclusions["Internal_Transfer_Patterns"] in description:
             exclude_from_summary = True
             exclusion_reason = "Internal transfer"
+    elif account_name == "HSBC Savings" and amount < 0:
+        if "401336 10574775 INTERNET TRANSFER TFR" not in description: # Global Money account transfers (include these)
+            exclude_from_summary = True
+            exclusion_reason = "Internal transfer or credit card repayment"
     return exclude_from_summary, exclusion_reason
 
 def import_transactions_from_file(file, statement_type):
@@ -92,7 +103,7 @@ def import_transactions_from_file(file, statement_type):
     skipped_count = 0
     for _, row in df.iterrows():
         exclude_from_summary, exclusion_reason = classify_exclusion(account_name,row["Amount"],row["description_clean"])
-        fingerprint = make_fingerprint(row["Date"],row["Transaction Description"],row["Amount"],row["duplicate_index"]) # unique identifier
+        fingerprint = make_fingerprint(account_name, row["Date"],row["Transaction Description"],row["Amount"],row["duplicate_index"]) # unique identifier
         category = categorise_transaction(row["description_clean"])
         existing = Transaction.query.filter_by(fingerprint=fingerprint).first() # checks if unique identifier exists in table
         if existing:
