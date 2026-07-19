@@ -1,1 +1,5 @@
-No file uploaded - Please <a href="{{ url_for('main.upload') }}">upload a statement</a>.
+{% extends "base.html" %}
+
+{% block content %}
+    No file uploaded - Please <a href="{{ url_for('main.upload') }}">upload a statement</a>.
+{% endblock %}

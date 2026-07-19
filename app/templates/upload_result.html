@@ -1,4 +1,17 @@
-<p>Imported: {{ imported_count }}</p>
-<p>Skipped: {{ skipped_count }}</p>
+{% extends "base.html" %}
 
-<a href="{{ url_for('main.upload') }}">Upload another statement</a>
+{% block content %}
+    <div class="alert alert-success" role="alert">
+        Import completed successfully.
+    </div>
+    <ul class="list-group mb-3">
+        <li class="list-group-item">
+            Imported: {{ imported_count }}
+        </li>
+        <li class="list-group-item">
+            Skipped: {{ skipped_count }}
+        </li>
+    </ul>
+    <a href="{{ url_for('main.upload') }}" class="btn btn-secondary">Upload another file</a>
+    <a href="{{ url_for('main.summary') }}" class="btn btn-primary">View summary</a>
+{% endblock %}

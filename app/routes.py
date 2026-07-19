@@ -7,7 +7,7 @@ main = Blueprint("main",__name__) # Blueprint object (collection of routes) crea
 
 @main.route("/") # when "/" is visited, run function below
 def home():
-    return "Spending Tracker homepage"
+    return render_template("home.html")
 
 @main.route("/transactions") # "/transactions" route
 def transactions():

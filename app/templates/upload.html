@@ -1,24 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload</title>
-</head>
-<body>
-    <h1>Upload Transactions CSV</h1>
+{% extends "base.html" %}
 
-    <form method="POST" enctype="multipart/form-data">
-        <input type="file" name="csv_file" accept=".csv,.xlsx,.xls">
-        <label for="statement_types">Select Statement Type:</label>
-        <select name="statement_types" id="statement_types">
-            <option value="hsbc_current">HSBC Current</option>
-            <option value="hsbc_credit">HSBC Credit</option>
-            <option value="amex">AMEX</option>
-            <option value="hsbc_savings">HSBC Savings</option>
-            <option value="legacy">Legacy Excel</option>
-        </select>
-        <button type="submit">Upload</button>
-    </form>
-</body>
-</html>
+{% block content %}
+    <div class="card">
+        <div class="card-body">
+            <h1 class="card-title mb-4">Upload Statement</h1>
+            <form method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="csv_file" class="form-label">Choose statement file</label>
+                    <input type="file" name="csv_file" id="csv_file" class="form-control" accept=".csv,.xlsx,.xls" required>
+                </div>
+                <div class="mb-3">
+                    <label for="statement_types" class="form-label">Select statement type</label>
+                    <select name="statement_types" id="statement_types">
+                        <option value="" selected disabled>-- Select statement type --</option>
+                        <option value="hsbc_current">HSBC Current</option>
+                        <option value="hsbc_credit">HSBC Credit</option>
+                        <option value="amex">AMEX</option>
+                        <option value="hsbc_savings">HSBC Savings</option>
+                        <option value="legacy">Legacy Excel</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
