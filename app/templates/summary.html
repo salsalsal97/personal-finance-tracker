@@ -23,9 +23,9 @@
     {% else %}
         <b>All Transactions</b> <br/><br/>
     {% endif %}
-    Total money in: £{{ "%.2f"|format(total_income) }} <br/>
-    Total money out: £{{ "%.2f"|format(total_spending | abs) }} <br/>
-    Net cashflow: {{ "-£" if net_cashflow < 0 else "£" }}{{ "%.2f"|format(net_cashflow | abs) }} <br/>
+    Total money in: £{{ "{:,.2f}".format(total_income) }} <br/>
+    Total money out: £{{ "{:,.2f}".format(total_spending | abs) }} <br/>
+    Net cashflow: {{ "-£" if net_cashflow < 0 else "£" }}{{ "{:,.2f}".format(net_cashflow | abs) }} <br/>
     Transaction count: {{ transaction_count }} <br/>
     Excluded transactions: {{ exclude_transactions_count }} <br/><br/>
     <h2>Spending by Category</h2>
@@ -38,7 +38,7 @@
             {% for category_name, amount in category_totals %}
                 <tr>
                     <td>{{ category_name }}</td>
-                    <td>£{{ "%.2f"|format(amount) }}</td>
+                    <td>£{{ "{:,.2f}".format(amount) }}</td>
                 </tr>
             {% else %}
                 <tr>

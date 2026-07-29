@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app.models import Transaction, Category
 from app.extensions import db
-from app.services.importer import import_transactions_from_file
+from app.services.importer import import_transactions_from_file, categorise_transaction
 
 main = Blueprint("main",__name__) # Blueprint object (collection of routes) created, called "main"
 
@@ -94,10 +94,38 @@ def categorise():
         db.session.commit()
         return redirect(url_for("main.categorise"))
     else:
-        transactions = Transaction.query.filter_by(category_id=None).order_by(Transaction.date.desc()).all()
+        transactions = Transaction.query.filter(
+            Transaction.category_id.is_(None),
+            Transaction.exclude_from_summary.is_(False),
+        ).order_by(Transaction.date.desc()).all()
         categories = Category.query.order_by(Category.name).all()
         return render_template(
             "categorise.html",
             transactions=transactions,
             categories=categories
         )
+
+@main.route("/auto-categorise", methods=["POST"])
+def auto_categorise():
+    uncategorised = Transaction.query.filter(
+        Transaction.category_id.is_(None),
+        Transaction.exclude_from_summary.is_(False)
+    ).all()
+    categorised = 0
+    for transaction in uncategorised:
+        category_id = categorise_transaction(transaction.description_clean)
+        if category_id is not None:
+            transaction.category_id = category_id
+            categorised += 1
+    db.session.commit()
+    if categorised > 0:
+        flash(
+            f"{categorised} transaction{'s' if categorised != 1 else ''} categorised automatically.",
+            "success",
+        )
+    else:
+        flash(
+            "No uncategorised transactions matched the current automatic rules.",
+            "info",
+        )
+    return redirect(url_for("main.categorise"))
