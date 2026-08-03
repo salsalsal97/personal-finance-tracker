@@ -49,6 +49,7 @@ app/
 
 scripts/
 └── seed_categories.py
+└── statement_to_csv.py
 
 create_db.py
 run.py
