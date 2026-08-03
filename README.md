@@ -1,4 +1,4 @@
-# Spending Tracker
+# Personal Finance Tracker
 
 A personal finance web application built with Flask for importing, categorising, and analysing transactions from multiple bank accounts.
 
