@@ -45,7 +45,7 @@ def summary():
         month_number = int(split[1])
         transactions = [t for t in transactions if t.date.year == year and t.date.month == month_number]
     valid_transactions = [t for t in transactions if t.exclude_from_summary is False]
-    excluded_transactions = set(transactions) - set(valid_transactions)
+    exclude_transactions_count = sum(1 for transaction in transactions if transaction.exclude_from_summary)
     total_income = sum(t.amount for t in valid_transactions if t.amount > 0)
     total_spending = sum(t.amount for t in valid_transactions if t.amount < 0)
     net_cashflow = total_income + total_spending
@@ -68,7 +68,6 @@ def summary():
     for name_amount in category_totals:
         category_names.append(name_amount[0])
         category_amounts.append(name_amount[1])
-    exclude_transactions_count = len(excluded_transactions)
     return render_template(
         "summary.html",
         available_months=available_months,
