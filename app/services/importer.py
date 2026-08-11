@@ -109,7 +109,12 @@ def import_transactions_from_file(file, statement_type):
         exclude_from_summary, exclusion_reason = classify_exclusion(account_name,row["Amount"],row["description_clean"])
         fingerprint = make_fingerprint(account_name, row["Date"],row["Transaction Description"],row["Amount"],row["duplicate_index"]) # unique identifier
         if statement_type == "legacy":
-            category = Category.query.filter_by(name=row["Legacy Category"]).first_or_404().id
+            category_match = Category.query.filter_by(name=row["Legacy Category"]).first()
+            if category_match is None:
+                raise ValueError(
+                    f"Legacy category not found: {row['Legacy Category']}"
+                )
+            category = category_match.id
         else:
             category = categorise_transaction(row["description_clean"])
         existing = Transaction.query.filter_by(fingerprint=fingerprint).first() # checks if unique identifier exists in table
