@@ -5,3 +5,5 @@ __pycache__/
 instance/
 concept.txt
 data/*
+explore_trends.ipynb
+.venv/
