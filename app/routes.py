@@ -33,6 +33,7 @@ def upload():
 @main.route("/summary")
 def summary():
     all_transactions = Transaction.query.all()
+    categories = Category.query.order_by(Category.name).all()
     month = request.args.get("month")
     transactions = all_transactions
     available_months = sorted(
@@ -44,7 +45,8 @@ def summary():
         year = int(split[0])
         month_number = int(split[1])
         transactions = [t for t in transactions if t.date.year == year and t.date.month == month_number]
-    valid_transactions = [t for t in transactions if t.exclude_from_summary is False]
+    excluded_category_ids = request.args.getlist("exclude_category", type=int)
+    valid_transactions = [t for t in transactions if t.exclude_from_summary is False and t.category_id not in excluded_category_ids]
     exclude_transactions_count = sum(1 for transaction in transactions if transaction.exclude_from_summary)
     total_income = sum(t.amount for t in valid_transactions if t.amount > 0)
     total_spending = sum(t.amount for t in valid_transactions if t.amount < 0)
@@ -79,7 +81,9 @@ def summary():
         category_totals=category_totals,
         category_names=category_names,
         category_amounts=category_amounts,
-        exclude_transactions_count=exclude_transactions_count
+        exclude_transactions_count=exclude_transactions_count,
+        categories=categories,
+        excluded_category_ids=excluded_category_ids
     )
 
 @main.route("/categorise", methods=["GET","POST"])

@@ -19,7 +19,7 @@
         id="summary-filter-form"
         method="GET"
         action="{{ url_for('main.summary') }}"
-        class="d-flex align-items-end gap-2"
+        class="d-flex flex-wrap align-items-end gap-2"
     >
         <div>
             <label for="month" class="form-label">
@@ -42,6 +42,50 @@
                     </option>
                 {% endfor %}
             </select>
+        </div>
+
+        <div>
+            <label class="form-label">
+                Exclude categories
+            </label>
+
+            <div class="dropdown">
+                <button
+                    class="btn btn-outline-secondary dropdown-toggle"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    data-bs-auto-close="outside"
+                    aria-expanded="false"
+                >
+                    {% if excluded_category_ids %}
+                        {{ excluded_category_ids | length }} excluded
+                    {% else %}
+                        None excluded
+                    {% endif %}
+                </button>
+
+                <div class="dropdown-menu p-3">
+                    {% for category in categories %}
+                        <div class="form-check">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                name="exclude_category"
+                                value="{{ category.id }}"
+                                id="exclude-category-{{ category.id }}"
+                                {% if category.id in excluded_category_ids %}checked{% endif %}
+                            >
+
+                            <label
+                                class="form-check-label"
+                                for="exclude-category-{{ category.id }}"
+                            >
+                                {{ category.name }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
 
         <button type="submit" class="btn btn-primary">
@@ -322,18 +366,5 @@
     </script>
 
 {% endif %}
-
-<script>
-    document
-        .getElementById("summary-filter-form")
-        .addEventListener("submit", function(event) {
-            const month = document.getElementById("month").value;
-
-            if (month === "") {
-                event.preventDefault();
-                window.location.href = "{{ url_for('main.summary') }}";
-            }
-        });
-</script>
 
 {% endblock %}
