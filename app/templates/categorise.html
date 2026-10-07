@@ -22,31 +22,55 @@
                 <th>Amount</th>
                 <th>Category</th>
                 <th>Save</th>
+                <th>Delete</th>
             </tr>
+
             {% for transaction in transactions %}
-                {% if transactions %}
-                    <tr>
-                        <form method="POST">
-                            <input type="hidden" name="transaction_id" value="{{ transaction.id }}">
-                            <td>{{ transaction.date }}</td>
-                            <td>{{ transaction.description_raw }}</td>
-                            <td>{{ "%.2f"|format(transaction.amount) }}</td>
-                            <td>
-                                <select name="category_id" class="form-select" required>
-                                    <option value="" selected disabled>-- Select Category --</option>
-                                    {% for category in categories %}
-                                        <option value="{{ category.id }}">{{ category.name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </td>
-                            <td><button type="submit" class="btn btn-sm btn-primary">Save</button></td>
+                <tr>
+                    <form method="POST">
+                        <input type="hidden" name="transaction_id" value="{{ transaction.id }}">
+
+                        <td>{{ transaction.date }}</td>
+                        <td>{{ transaction.description_raw }}</td>
+                        <td>{{ "%.2f"|format(transaction.amount) }}</td>
+
+                        <td>
+                            <select name="category_id" class="form-select" required>
+                                <option value="" selected disabled>-- Select Category --</option>
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}">{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+
+                        <td>
+                            <button type="submit" class="btn btn-sm btn-primary">
+                                Save
+                            </button>
+                        </td>
+                    </form>
+
+                    <td>
+                        <form
+                            method="POST"
+                            action="{{ url_for('main.delete_transaction', transaction_id=transaction.id) }}"
+                            onsubmit="return confirm('Are you sure you want to delete this transaction?');"
+                        >
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                Delete
+                            </button>
                         </form>
-                    </tr>
-                {% else %}
-                    <div class="alert alert-success">
-                        All transactions have been categorised.
-                    </div>
-                {% endif %}
+                    </td>
+                </tr>
+
+            {% else %}
+                <tr>
+                    <td colspan="6">
+                        <div class="alert alert-success mb-0">
+                            All transactions have been categorised.
+                        </div>
+                    </td>
+                </tr>
             {% endfor %}
         </table>
     </div>

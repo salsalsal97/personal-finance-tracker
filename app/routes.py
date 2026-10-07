@@ -104,6 +104,20 @@ def categorise():
             categories=categories
         )
 
+@main.route("/transactions/<int:transaction_id>/delete", methods=["POST"])
+def delete_transaction(transaction_id):
+    transaction = db.session.get(Transaction, transaction_id)
+
+    if transaction is None:
+        flash("Transaction not found.", "danger")
+        return redirect(url_for("main.categorise"))
+
+    db.session.delete(transaction)
+    db.session.commit()
+
+    flash("Transaction deleted.", "success")
+    return redirect(url_for("main.categorise"))
+
 @main.route("/auto-categorise", methods=["POST"])
 def auto_categorise():
     uncategorised = Transaction.query.filter(

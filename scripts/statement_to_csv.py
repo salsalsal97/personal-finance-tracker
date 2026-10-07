@@ -60,7 +60,7 @@ def statement_to_csv(
     output_csv_path: Optional[str] = None,
     model: str = DEFAULT_MODEL,
     api_key: Optional[str] = None,
-    max_tokens: int = 4000,
+    max_tokens: int = 8000,
 ) -> str:
     """
     Extract transactions from a statement PDF and return them as CSV text.
